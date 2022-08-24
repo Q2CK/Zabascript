@@ -1,0 +1,174 @@
+{
+  "fn": {
+    "token_name": "FUNCTION",
+    "token_type": "function"
+  },
+  "return": {
+    "token_name": "RETURN",
+    "token_type": "unary_operator"
+  },
+  "match": {
+    "token_name": "MATCH",
+    "token_type": "loop"
+  },
+  "=>": {
+    "token_name": "CASE",
+    "token_type": "function"
+  },
+  "if": {
+    "token_name": "IF",
+    "token_type": "function"
+  },
+  "else": {
+    "token_name": "ELSE",
+    "token_type": "function"
+  },
+  "while": {
+    "token_name": "WHILE",
+    "token_type": "function"
+  },
+  "=": {
+    "token_name": "ASSIGN",
+    "token_type": "binary_operator"
+  },
+  "+": {
+    "token_name": "ADD",
+    "token_type": "binary_operator"
+  },
+  "-": {
+    "token_name": "SUBTRACT",
+    "token_type": "binary_operator"
+  },
+  "++": {
+    "token_name": "INCREMENT",
+    "token_type": "unary_operator"
+  },
+  "--": {
+    "token_name": "DECREMENT",
+    "token_type": "unary_operator"
+  },
+  "+=": {
+    "token_name": "ADD_SELF",
+    "token_type": "binary_operator"
+  },
+  "-=": {
+    "token_name": "SUBTRACT_SELF",
+    "token_type": "binary_operator"
+  },
+  "*=": {
+    "token_name": "MULTIPLY_SELF",
+    "token_type": "binary_operator"
+  },
+  "/=": {
+    "token_name": "DIVIDE_SELF",
+    "token_type": "binary_operator"
+  },
+  "%=": {
+    "token_name": "MODULO_SELF",
+    "token_type": "binary_operator"
+  },
+  "*": {
+    "token_name": "MULTIPLY",
+    "token_type": "binary_operator"
+  },
+  "/": {
+    "token_name": "DIVIDE",
+    "token_type": "binary_operator"
+  },
+  "%": {
+    "token_name": "MODULO",
+    "token_type": "binary_operator"
+  },
+  "&": {
+    "token_name": "BITWISE_AND",
+    "token_type": "binary_operator"
+  },
+  "|": {
+    "token_name": "BITWISE_OR",
+    "token_type": "binary_operator"
+  },
+  "^": {
+    "token_name": "BITWISE_XOR",
+    "token_type": "binary_operator"
+  },
+  "~": {
+    "token_name": "BITWISE_NOT",
+    "token_type": "unary_operator"
+  },
+  "and": {
+    "token_name": "BOOLEAN_AND",
+    "token_type": "binary_operator"
+  },
+  "or": {
+    "token_name": "BOOLEAN_OR",
+    "token_type": "binary_operator"
+  },
+  "not": {
+    "token_name": "BOOLEAN_NOT",
+    "token_type": "unary_operator"
+  },
+  "==": {
+    "token_name": "EQUAL",
+    "token_type": "binary_operator"
+  },
+  "!=": {
+    "token_name": "NOT_EQUAL",
+    "token_type": "binary_operator"
+  },
+  "<": {
+    "token_name": "LESS",
+    "token_type": "binary_operator"
+  },
+  ">": {
+    "token_name": "GREATER",
+    "token_type": "binary_operator"
+  },
+  "<=": {
+    "token_name": "LESS_EQUAL",
+    "token_type": "binary_operator"
+  },
+  ">=": {
+    "token_name": "MORE_EQUAL",
+    "token_type": "binary_operator"
+  },
+  "[": {
+    "token_name": "LEFT_SQUARE_BRACKET",
+    "token_type": "square_block"
+  },
+  "]": {
+    "token_name": "RIGHT_SQUARE_BRACKET",
+    "token_type": "square_block"
+  },
+  "(": {
+    "token_name": "LEFT_ROUND_BRACKET",
+    "token_type": "round_block"
+  },
+  ")": {
+    "token_name": "RIGHT_ROUND_BRACKET",
+    "token_type": "round_block"
+  },
+  "{": {
+    "token_name": "LEFT_CURLY_BRACKET",
+    "token_type": "curly_block"
+  },
+  "}": {
+    "token_name": "RIGHT_CURLY_BRACKET",
+    "token_type": "curly_block"
+  },
+  ",": {
+    "token_name": "COMMA",
+    "token_type": "separator"
+  },
+  ";": {
+    "token_name": "SEMICOLON",
+    "token_type": "separator"
+  },
+  "\"": {
+    "token_name": "QUOTE",
+    "token_type": "quote"
+  },
+  "'": {
+    "token_name": "QUOTE",
+    "token_type": "quote"
+  }
+}

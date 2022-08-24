@@ -1,0 +1,9 @@
+fn main() {
+    a+= 0;
+    b = 1 ;
+    while(a <=b){
+        b++;
+    }
+    c = (a+ b)-min(2,3, 5);
+    return 0;
+}
