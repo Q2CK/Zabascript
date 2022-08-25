@@ -1,13 +1,12 @@
-fn main() {
-    a+= 0;
-    b = 1 ;
-    while(a <=b){
-        b++;
+fn test(a, b, c) {
+    {
+        a++;
+        {
+            test();
+        }
     }
-    c = (a+ b)-min(2,3, 5);
-    return 0;
-}
-
-fn test() {
-    return 0;
+    {
+        test2();
+    }
+    return a + b + c;
 }
