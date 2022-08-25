@@ -1,12 +1,12 @@
-fn test(a, b, c) {
-    {
-        a++;
-        {
-            test();
-        }
+fn fibonacci(n) {
+    if(n == 0 || n == 1) {
+        return n;
     }
-    {
-        test2();
+    else {
+        return fibonacci(n - 1) + fibonacci(n - 2);
     }
-    return a + b + c;
+}
+
+fn main() {
+    print(fibonacci(10));
 }
