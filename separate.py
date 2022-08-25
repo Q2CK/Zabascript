@@ -1,7 +1,8 @@
 from chars import *
 
-def separate(input_string):
-    i = 1
+
+def separate(input_string: str):
+    i: int = 1
     while i < len(input_string) - 1:
         if input_string[i] in absolute_separators:
             input_string = input_string[:i] + " " + input_string[i:]

@@ -7,3 +7,7 @@ fn main() {
     c = (a+ b)-min(2,3, 5);
     return 0;
 }
+
+fn test() {
+    return 0;
+}
