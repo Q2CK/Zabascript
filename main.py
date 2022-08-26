@@ -1,10 +1,27 @@
 from syntaxtree import *
 from separate import *
 
-torch: str = open("test.tr").read()
-output = open("output.txt", "w")
+input_file_name = ""
+input_string = ""
 
-token_list = separate(torch).split()
+while True:
+    try:
+        input_file_name = input("Żabascript file name: ")
+        input_string: str = open(input_file_name).read()
+    except FileNotFoundError:
+        print("File not found")
+        continue
+    else:
+        break
+
+output_file = open("out_" + input_file_name.split(".")[0] + ".tree", "w")
+
+token_list = separate(input_string).split()
 ast = SyntaxTree(token_list)
-ast.show(ast.root)
+
+print("\nAbstract syntax tree:\n")
+ast.show(ast.root, output_file)
+
+input()
+
 

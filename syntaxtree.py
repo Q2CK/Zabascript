@@ -1,26 +1,8 @@
 from chars import *
 
 
-class Node:
-    parent = None
-
-    def __init__(self, name: str, kind: str = "other", data=None):
-        if data is None:
-            data = []
-        self.data = data
-        self.level = 0
-        self.kind = kind
-        self.name = name
-        self.children = []
-
-    def add_child(self, child):
-        self.children.append(child)
-        child.parent = self
-        child.level = self.level + 1
-        return self
-
-
 def handle_blocks(root, content: list):
+
     index = 0
     length = len(content)
     first_bracket = None
@@ -67,48 +49,140 @@ def handle_blocks(root, content: list):
 
         root.add_child(new_node)
 
-        if len(content) > 0:
-            index += 1
-        else:
-            break
+        index += 1
 
     return root, []
 
 
 def handle_functions(node):
+
     index = 0
-    while index < len(node.children) - 1:
+    length = len(node.children) - 1
+    content = node.children
 
-        if node.name == "root" and node.kind == "root" and node.children[index].kind == "fn":
+    errors = []
 
-            node.children[index].children.append(node.children.pop(index + 1))
-            node.children[index].children.append(node.children.pop(index + 1))
+    found_main = False
 
-            node.data.append((node.children[index].name, "function"))
+    while index < length:
+        if node.name == "root" and node.kind == "root" and content[index].kind == "fn":
 
-        elif node.name == "root" and node.kind == "root" and node.children[index].kind != "fn":
-            print("Not a function")
+            if content[index].name == "main":
+                found_main = True
+
+            content[index].children.append(content.pop(index + 1))
+            content[index].children.append(content.pop(index + 1))
+
+            node.data.append((content[index].name, "function"))
+
+        elif node.name == "root" and node.kind == "root" and content[index].kind != "fn":
+            errors.append(f"Error: Root child \"{content[index].name}: {content[index].kind}\" is not a function")
 
         index += 1
+        length = len(content) - 1
+
+    if not found_main:
+        errors.append("Error: \"main: fn\" not found")
+
+    return node, errors
+
+
+def handle_conditionals(node):
+
+    index = 0
+    length = len(node.children) - 1
+    content = node.children
+
+    while index < length:
+        if content[index].kind in ["conditional", "loop"]:
+
+            content[index].children.append(content.pop(index + 1))
+            content[index].children.append(content.pop(index + 1))
+
+            node.data.append((content[index].name, "function"))
+
+        index += 1
+        length = len(content) - 1
 
     return node
 
-def handle_operators(node):
-    pass
+
+def all_brackets_closed(token_list):
+
+    curly_counter = 0
+    round_counter = 0
+    square_counter = 0
+
+    for token in token_list:
+        match token:
+            case "{":
+                curly_counter += 1
+            case "}":
+                curly_counter -= 1
+            case "(":
+                round_counter += 1
+            case ")":
+                round_counter -= 1
+            case "[":
+                square_counter += 1
+            case "]":
+                square_counter -= 1
+
+    return curly_counter == 0 and round_counter == 0 and square_counter == 0
+
+
+class Node:
+
+    parent = None
+
+    def __init__(self, name: str, kind: str = "other", data=None):
+
+        if data is None:
+            data = []
+        self.data = data
+
+        self.level = 0
+        self.kind = kind
+        self.name = name
+        self.children = []
+
+    def add_child(self, child):
+
+        self.children.append(child)
+        child.parent = self
+        child.level = self.level + 1
+
+        return self
 
 
 class SyntaxTree:
-    def __init__(self, token_list: list[str]):
-        token_list.append("eof")
-        self.root, token_list = handle_blocks(Node("root", "root"), token_list)
-        self.root = handle_functions(self.root)
 
-    def show(self, node, indent=""):
-        print(f"{indent}\"{node.name}\": {node.kind}")
+    errors = []
+
+    def __init__(self, token_list: list[str]):
+
+        token_list.append("eof")
+
+        if not all_brackets_closed(token_list):
+            self.errors.append("Unclosed bracket found")
+
+        self.root, token_list = handle_blocks(Node("root", "root"), token_list)
+        self.root, new_errors = handle_functions(self.root)
+        self.errors.append(new_errors)
+
+        self.root = self.for_all(self.root, handle_conditionals)
+
+    def show(self, node, output_file, indent=""):
+
+        output_line = f"{indent}\"{node.name}\": {node.kind}"
+        print(output_line)
+        output_file.writelines(output_line + "\n")
+
         for item in node.children:
-            self.show(item, indent + "│ ")
+            self.show(item, output_file, indent + "  ")
 
     def for_all(self, node, function):
+
         display = ""
         display += f"{node.name}({node.kind}): "
 
@@ -117,3 +191,5 @@ class SyntaxTree:
         for item in node.children:
             self.for_all(item, function)
             display += f"{item.name}({item.kind}), "
+
+        return node
