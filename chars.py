@@ -3,8 +3,8 @@ keywords = ['return', 'match', 'while', 'else', 'and', 'not', 'fn', '=>', 'if', 
             '/', '%', '&', '|', '^', '~', '<', '>', '[', ']', '(', ')', '{', '}', ',', ';',
             "\"", "'"]
 
-possible_separators = "~!@#$%^&*()-=+[]{};:'\"|<>?/"
-absolute_separators = "(){};:'\",."
+possible_separators = "~!@#$%^&*()-=+;:'\"|<>?/"
+absolute_separators = "()[]{};:'\",."
 
 opening_brackets = ["{", "[", "("]
 
