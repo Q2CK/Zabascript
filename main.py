@@ -1,3 +1,5 @@
+import os
+
 from syntaxtree import *
 from separate import *
 
@@ -7,9 +9,9 @@ input_string = ""
 while True:
     try:
         input_file_name = input("Żabascript file name: ")
-        input_string: str = open(input_file_name).read()
+        input_string: str = open(os.path.abspath(input_file_name)).read()
     except FileNotFoundError:
-        print("File not found")
+        print(f"File {input_file_name} not found")
         continue
     else:
         break
@@ -22,6 +24,6 @@ ast = SyntaxTree(token_list)
 print("\nAbstract syntax tree:\n")
 ast.show(ast.root, output_file)
 
-input()
+input("\nPress enter to quit...")
 
 
