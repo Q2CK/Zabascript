@@ -1,0 +1,81 @@
+C:\Users\Oem\AppData\Local\Microsoft\WindowsApps\python3.10.exe C:/Users/Oem/PycharmProjects/Żabascript/main.py
+Żabascript file name: test.żs
+
+Abstract syntax tree:
+
+"root": root
+  "fibonacci": fn
+    "(": block
+      "n": other
+    "{": block
+      "if": conditional
+        "(": block
+          "n": other
+          "==": comparison
+          "0": other
+          "||": other
+          "n": other
+          "==": comparison
+          "1": other
+        "{": block
+          "return": return
+          "n": other
+          ";": punctuation
+      "else": conditional
+        "(": block
+          "True": other
+        "{": block
+          "return": return
+          "+": numeric
+            "fibonacci": other
+              "(": block
+                "-": numeric
+                  "2": other
+                  "n": other
+            "fibonacci": other
+              "(": block
+                "-": numeric
+                  "1": other
+                  "n": other
+          ";": punctuation
+  "some_loop": fn
+    "(": block
+      "x": other
+      ",": punctuation
+      "y": other
+    "{": block
+      "while": loop
+        "(": block
+          "x": other
+          "<": comparison
+          "10": other
+        "{": block
+          "x": other
+          "++": numeric
+          ";": punctuation
+      "return": return
+      "(": block
+        "+": numeric
+          "(": block
+            "*": numeric
+              "2": other
+              "x": other
+          "y": other
+      ";": punctuation
+  "main": fn
+    "(": block
+    "{": block
+      "x": other
+      "=": assignment
+      "-": numeric
+        "0": other
+        "10": other
+      "print": other
+      "(": block
+        "fibonacci": other
+          "(": block
+            "-": numeric
+            "x": other
+      ";": punctuation
+
+Press enter to quit...
