@@ -60,31 +60,15 @@ def handle_functions(node):
     length = len(node.children) - 1
     content = node.children
 
-    errors = []
-
-    found_main = False
-
     while index < length:
         if node.name == "root" and node.kind == "root" and content[index].kind == "fn":
-
-            if content[index].name == "main":
-                found_main = True
-
             content[index].children.append(content.pop(index + 1))
             content[index].children.append(content.pop(index + 1))
-
-            node.data.append((content[index].name, "function"))
-
-        elif node.name == "root" and node.kind == "root" and content[index].kind != "fn":
-            errors.append(f"Error: Root child \"{content[index].name}: {content[index].kind}\" is not a function")
 
         index += 1
         length = len(content) - 1
 
-    if not found_main:
-        errors.append("Error: \"main: fn\" not found")
-
-    return node, errors
+    return node
 
 
 def handle_conditionals(node):
@@ -100,6 +84,65 @@ def handle_conditionals(node):
             content[index].children.append(content.pop(index + 1))
 
             node.data.append((content[index].name, "function"))
+
+        index += 1
+        length = len(content) - 1
+
+    return node
+
+
+function_names = []
+
+
+def handle_calls(node):
+
+    if node.name == "root" and node.kind == "root":
+        for item in node.children:
+            if item.kind == "fn":
+                function_names.append(item.name)
+
+    index = 0
+    length = len(node.children) - 1
+    content = node.children
+
+    while index < length:
+        if content[index].kind == "other" and content[index].name in function_names:
+
+            content[index].children.append(content.pop(index + 1))
+
+        index += 1
+        length = len(content) - 1
+
+    return node
+
+
+def handle_numeric_binary(node):
+
+    index = 0
+    length = len(node.children) - 1
+    content = node.children
+
+    while index < length:
+        if index > 0 and content[index].name in ["+", "/", "%", "&", "|", "^"] and content[index].kind == "numeric":
+
+            content[index].children.append(content.pop(index + 1))
+            content[index].children.append(content.pop(index - 1))
+            index -= 1
+
+        elif content[index].name in ["-", "*"] and content[index].kind == "numeric":
+
+            if index > 0 and (content[index - 1].kind in ["numeric", "other"] or
+                    (content[index - 1].kind == "block" and content[index - 1].name == "(")):
+
+                content[index].children.append(content.pop(index + 1))
+                content[index].children.append(content.pop(index - 1))
+                index -= 1
+
+            elif index > 0 and not (index > 0 and (content[index - 1].kind in ["numeric", "other"] or
+                    (content[index - 1].kind == "block" and content[index - 1].name == "("))):
+
+                content[index].children.append(Node("0"))
+                content[index].children.append(content.pop(index + 1))
 
         index += 1
         length = len(content) - 1
@@ -167,10 +210,12 @@ class SyntaxTree:
             self.errors.append("Unclosed bracket found")
 
         self.root, token_list = handle_blocks(Node("root", "root"), token_list)
-        self.root, new_errors = handle_functions(self.root)
-        self.errors.append(new_errors)
+
+        self.root = handle_functions(self.root)
 
         self.root = self.for_all(self.root, handle_conditionals)
+        self.root = self.for_all(self.root, handle_calls)
+        self.root = self.for_all(self.root, handle_numeric_binary)
 
     def show(self, node, output_file, indent=""):
 

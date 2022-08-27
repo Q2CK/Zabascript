@@ -21,24 +21,54 @@
           "True": other
         "{": block
           "return": return
-          "fibonacci": other
-          "(": block
-            "n": other
-            "-": numeric
-            "1": other
           "+": numeric
-          "fibonacci": other
-          "(": block
-            "n": other
-            "-": numeric
-            "2": other
+            "fibonacci": other
+              "(": block
+                "-": numeric
+                  "2": other
+                  "n": other
+            "fibonacci": other
+              "(": block
+                "-": numeric
+                  "1": other
+                  "n": other
           ";": punctuation
+  "some_loop": fn
+    "(": block
+      "x": other
+      ",": punctuation
+      "y": other
+    "{": block
+      "while": loop
+        "(": block
+          "x": other
+          "<": comparison
+          "10": other
+        "{": block
+          "x": other
+          "++": numeric
+          ";": punctuation
+      "return": return
+      "(": block
+        "+": numeric
+          "(": block
+            "*": numeric
+              "2": other
+              "x": other
+          "y": other
+      ";": punctuation
   "main": fn
     "(": block
     "{": block
+      "x": other
+      "=": assignment
+      "-": numeric
+        "0": other
+        "10": other
       "print": other
       "(": block
         "fibonacci": other
-        "(": block
-          "10": other
+          "(": block
+            "-": numeric
+            "x": other
       ";": punctuation

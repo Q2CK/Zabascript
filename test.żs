@@ -7,6 +7,14 @@ fn fibonacci(n) {
     }
 }
 
+fn some_loop ( x, y) {
+    while(x < 10) {
+        x++;
+    }
+    return (y + (x * 2));
+}
+
 fn main() {
-    print(fibonacci(10));
+    x = -10
+    print(fibonacci(-x));
 }
