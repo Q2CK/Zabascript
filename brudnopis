@@ -10,33 +10,33 @@ Abstract syntax tree:
     "{": block
       "if": conditional
         "(": block
-          "n": other
-          "==": comparison
-          "0": other
-          "||": other
-          "n": other
-          "==": comparison
-          "1": other
+          "or": boolean
+            "==": comparison
+              "1": other
+              "n": other
+            "==": comparison
+              "0": other
+              "n": other
         "{": block
           "return": return
-          "n": other
+            "n": other
           ";": punctuation
       "else": conditional
         "(": block
           "True": other
         "{": block
           "return": return
-          "+": numeric
-            "fibonacci": other
-              "(": block
-                "-": numeric
-                  "2": other
-                  "n": other
-            "fibonacci": other
-              "(": block
-                "-": numeric
-                  "1": other
-                  "n": other
+            "+": numeric
+              "fibonacci": other
+                "(": block
+                  "-": numeric
+                    "2": other
+                    "n": other
+              "fibonacci": other
+                "(": block
+                  "-": numeric
+                    "1": other
+                    "n": other
           ";": punctuation
   "some_loop": fn
     "(": block
@@ -46,15 +46,14 @@ Abstract syntax tree:
     "{": block
       "while": loop
         "(": block
-          "x": other
           "<": comparison
-          "10": other
+            "10": other
+            "x": other
         "{": block
-          "x": other
-          "++": numeric
+          "_++": numeric
+            "x": other
           ";": punctuation
       "return": return
-      "(": block
         "+": numeric
           "(": block
             "*": numeric
@@ -65,17 +64,18 @@ Abstract syntax tree:
   "main": fn
     "(": block
     "{": block
-      "x": other
       "=": assignment
-      "-": numeric
-        "0": other
-        "10": other
+        "-": numeric
+          "0": other
+          "10": other
+        "x": other
       "print": other
       "(": block
         "fibonacci": other
           "(": block
             "-": numeric
-            "x": other
+              "0": other
+              "x": other
       ";": punctuation
 
 Press enter to quit...

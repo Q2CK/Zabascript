@@ -1,5 +1,5 @@
 fn fibonacci(n) {
-    if(n==0||n==1) {
+    if(n == 0 or n == 1) {
         return n;
     }
     else(True) {
@@ -7,11 +7,11 @@ fn fibonacci(n) {
     }
 }
 
-fn some_loop ( x, y) {
+fn some_loop (x, y) {
     while(x < 10) {
         x++;
     }
-    return (y + (x * 2));
+    return y + (x * 2);
 }
 
 fn main() {
