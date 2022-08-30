@@ -82,6 +82,7 @@ class SyntaxTree:
 def handle_blocks(root: Node, content: list):
 
     index = 0
+
     length = len(content)
     first_bracket = None
 
@@ -135,6 +136,7 @@ def handle_blocks(root: Node, content: list):
 def handle_functions(node: Node):
 
     index = 0
+
     length = len(node.children) - 1
     content = node.children
 
@@ -152,6 +154,7 @@ def handle_functions(node: Node):
 def handle_conditionals(node: Node):
 
     index = 0
+
     length = len(node.children) - 1
     content = node.children
 
@@ -180,6 +183,7 @@ def handle_calls(node: Node):
                 function_names.append(item.name)
 
     index = 0
+
     length = len(node.children) - 1
     content = node.children
 
@@ -197,6 +201,7 @@ def handle_calls(node: Node):
 def handle_numeric_unary(node: Node):
 
     index = 0
+
     length = len(node.children) - 1
     content = node.children
 
@@ -226,6 +231,7 @@ def handle_numeric_unary(node: Node):
 def handle_numeric_ambiguous(node: Node):
 
     index = 0
+
     length = len(node.children) - 1
     content = node.children
 
@@ -255,6 +261,7 @@ def handle_numeric_ambiguous(node: Node):
 def handle_numeric_binary(node: Node):
 
     index = 0
+
     length = len(node.children) - 1
     content = node.children
 
@@ -275,6 +282,7 @@ def handle_numeric_binary(node: Node):
 def handle_comparison(node: Node):
 
     index = 0
+
     length = len(node.children) - 1
     content = node.children
 
@@ -293,6 +301,7 @@ def handle_comparison(node: Node):
 def handle_boolean_unary(node: Node):
 
     index = 0
+
     length = len(node.children) - 1
     content = node.children
 
@@ -311,6 +320,7 @@ def handle_boolean_unary(node: Node):
 def handle_boolean_binary(node: Node):
 
     index = 0
+
     length = len(node.children) - 1
     content = node.children
 
@@ -330,6 +340,7 @@ def handle_boolean_binary(node: Node):
 def handle_assignment(node: Node):
 
     index = 0
+
     length = len(node.children) - 1
     content = node.children
 
@@ -349,6 +360,7 @@ def handle_assignment(node: Node):
 def handle_return(node: Node):
 
     index = 0
+
     length = len(node.children) - 1
     content = node.children
 
