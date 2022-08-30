@@ -31,7 +31,11 @@ class SyntaxTree:
 
     def __init__(self, token_list: list[str]):
 
-        token_list.append("eof")
+        self.root = None
+
+        self.build(token_list)
+
+    def build(self, token_list):
 
         if not all_brackets_closed(token_list):
             self.errors.append("Unclosed bracket found")
@@ -42,9 +46,12 @@ class SyntaxTree:
 
         self.root = self.for_all(self.root, handle_conditionals)
         self.root = self.for_all(self.root, handle_calls)
-        self.root = self.for_all(self.root, handle_numeric)
+        self.root = self.for_all(self.root, handle_numeric_unary)
+        self.root = self.for_all(self.root, handle_numeric_ambiguous)
+        self.root = self.for_all(self.root, handle_numeric_binary)
         self.root = self.for_all(self.root, handle_comparison)
-        self.root = self.for_all(self.root, handle_boolean)
+        self.root = self.for_all(self.root, handle_boolean_unary)
+        self.root = self.for_all(self.root, handle_boolean_binary)
         self.root = self.for_all(self.root, handle_assignment)
         self.root = self.for_all(self.root, handle_return)
         self.root = self.for_all(self.root, handle_punctuation)
@@ -187,51 +194,77 @@ def handle_calls(node: Node):
     return node
 
 
-def handle_numeric(node: Node):
+def handle_numeric_unary(node: Node):
 
     index = 0
     length = len(node.children) - 1
     content = node.children
 
     while index < length:
-        if index > 0 and content[index].name in ["+", "/", "%", "|", "^"] and content[index].kind == "numeric":
+
+        if content[index].kind == "other" and content[index + 1].kind == "numeric" \
+                and content[index + 1].name in ["++", "--"]:
+
+            content[index + 1].children.append(content.pop(index))
+            index -= 1
+
+            content[index + 1].name = "_" + content[index + 1].name
+
+        elif content[index + 1].kind == "other" and content[index].kind == "numeric" \
+                and content[index].name in ["++", "--"]:
+
+            content[index].children.append(content.pop(index + 1))
+
+            content[index].name = content[index].name + "_"
+
+        index += 1
+        length = len(content) - 1
+
+    return node
+
+
+def handle_numeric_ambiguous(node: Node):
+
+    index = 0
+    length = len(node.children) - 1
+    content = node.children
+
+    while index < length:
+
+        if content[index].name in ["-", "*", "&"] and content[index].kind == "numeric":
+
+            if index > 0 and (content[index - 1].kind in ["numeric", "other"]
+                    or (content[index - 1].kind == "block" and content[index - 1].name == "(")):
+
+                content[index].children.append(content.pop(index + 1))
+                content[index].children.append(content.pop(index - 1))
+                index -= 1
+
+            elif index == 0 or (index > 0 and (content[index - 1].kind not in ["numeric", "other"]
+                    or content[index - 1].kind == "block" and content[index - 1].name == "(")):
+
+                content[index].children.append(Node("0"))
+                content[index].children.append(content.pop(index + 1))
+
+        index += 1
+        length = len(content) - 1
+
+    return node
+
+
+def handle_numeric_binary(node: Node):
+
+    index = 0
+    length = len(node.children) - 1
+    content = node.children
+
+    while index < length:
+        if index > 0 and content[index].name in ["+", "/", "%", "|", "^", "<<", ">>"] \
+                and content[index].kind == "numeric":
 
             content[index].children.append(content.pop(index + 1))
             content[index].children.append(content.pop(index - 1))
             index -= 1
-
-        elif content[index].name in ["-", "*", "&"] and content[index].kind == "numeric":
-
-            if index > 0 and (content[index - 1].kind in ["numeric", "other"] or
-                    (content[index - 1].kind == "block" and content[index - 1].name == "(")):
-
-                content[index].children.append(content.pop(index + 1))
-                content[index].children.append(content.pop(index - 1))
-                index -= 1
-
-            elif index == 0 or (index > 0 and (content[index - 1].kind not in ["numeric", "other"]
-                    or content[index - 1].kind == "block" and content[index - 1].name == "(")):
-
-                content[index].children.append(Node("0"))
-                content[index].children.append(content.pop(index + 1))
-
-        elif content[index].name in ["++", "--"] and content[index].kind == "numeric":
-
-            if index > 0 and (content[index - 1].kind in ["numeric", "other"] or
-                    (content[index - 1].kind == "block" and content[index - 1].name == "(")):
-
-                content[index].children.append(content.pop(index - 1))
-                index -= 1
-
-                content[index].name = "_" + content[index].name
-
-            elif index == 0 or (index > 0 and (content[index - 1].kind not in ["numeric", "other"]
-                    or content[index - 1].kind == "block" and content[index - 1].name == "(")):
-
-                content[index].children.append(Node("0"))
-                content[index].children.append(content.pop(index + 1))
-
-                content[index].name = content[index].name + "_"
 
         index += 1
         length = len(content) - 1
@@ -257,7 +290,25 @@ def handle_comparison(node: Node):
     return node
 
 
-def handle_boolean(node: Node):
+def handle_boolean_unary(node: Node):
+
+    index = 0
+    length = len(node.children) - 1
+    content = node.children
+
+    while index < length:
+
+        if content[index].name == "not" and content[index].kind == "numeric":
+
+            content[index].children.append(content.pop(index + 1))
+
+        index += 1
+        length = len(content) - 1
+
+    return node
+
+
+def handle_boolean_binary(node: Node):
 
     index = 0
     length = len(node.children) - 1
@@ -269,10 +320,6 @@ def handle_boolean(node: Node):
             content[index].children.append(content.pop(index + 1))
             content[index].children.append(content.pop(index - 1))
             index -= 1
-
-        elif content[index].name == "not" and content[index].kind == "numeric":
-
-            content[index].children.append(content.pop(index + 1))
 
         index += 1
         length = len(content) - 1

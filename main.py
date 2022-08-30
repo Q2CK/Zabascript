@@ -18,8 +18,11 @@ while True:
 
 output_file = open("out_" + input_file_name.split(".")[0] + ".tree", "w")
 
-token_list = separate(input_string).split()
+token_list, line_number_list = separate(input_string)
 ast = SyntaxTree(token_list)
+
+for error in ast.errors:
+    print(error)
 
 print("\nAbstract syntax tree:\n")
 ast.show(ast.root, output_file)

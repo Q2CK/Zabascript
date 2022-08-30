@@ -33,6 +33,9 @@
                     "1": other
                     "n": other
           ";": punctuation
+      "return": return
+        "1": other
+      ";": punctuation
   "some_loop": fn
     "(": block
       "x": other
@@ -45,8 +48,16 @@
             "10": other
             "x": other
         "{": block
-          "_++": numeric
-            "x": other
+          "=": assignment
+            "*": numeric
+              "(": block
+                "-": numeric
+                  "0": other
+                  "(": block
+                    "++_": numeric
+                      "x": other
+              "2": other
+            "y": other
           ";": punctuation
       "return": return
         "+": numeric
@@ -56,6 +67,9 @@
               "x": other
           "y": other
       ";": punctuation
+  "bajojajo": fn
+    "(": block
+    "{": block
   "main": fn
     "(": block
     "{": block
@@ -64,6 +78,7 @@
           "0": other
           "10": other
         "x": other
+      ";": punctuation
       "print": other
       "(": block
         "fibonacci": other
