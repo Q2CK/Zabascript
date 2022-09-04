@@ -21,6 +21,8 @@ output_file = open("out_" + input_file_name.split(".")[0] + ".tree", "w")
 token_list, line_number_list = separate(input_string)
 ast = SyntaxTree(token_list)
 
+ast.validate()
+
 for error in ast.errors:
     print(error)
 

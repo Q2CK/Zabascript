@@ -1,23 +1,25 @@
 fn fibonacci(n) {
     if(n == 0 or n == 1) {
-        return n;
+        return n
     }
     else(True) {
-        return fibonacci(n - 1) + fibonacci(n - 2);
+        return fibonacci(n - 1) + fibonacci(n - 2)
     }
-    return 1;
+    return 1
 }
+
+a = -2
 
 fn some_loop (x, y) {
     while(x < 10) {
-        y = 2 * (- (++x)) ;
+        y = 2 * (- (++x))
     }
-    return y + (x * 2);
+    return y + (x * 2)
 }
 
 fn bajojajo() {}
 
 fn main() {
-    x = -10;
-    print(fibonacci(-x));
+    *x = -10
+    print(fibonacci(-x))
 }

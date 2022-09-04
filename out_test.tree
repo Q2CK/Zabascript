@@ -7,15 +7,14 @@
         "(": block
           "or": boolean
             "==": comparison
-              "1": other
+              "1": constant
               "n": other
             "==": comparison
-              "0": other
+              "0": constant
               "n": other
         "{": block
           "return": return
             "n": other
-          ";": punctuation
       "else": conditional
         "(": block
           "True": other
@@ -25,17 +24,19 @@
               "fibonacci": other
                 "(": block
                   "-": numeric
-                    "2": other
+                    "2": constant
                     "n": other
               "fibonacci": other
                 "(": block
                   "-": numeric
-                    "1": other
+                    "1": constant
                     "n": other
-          ";": punctuation
       "return": return
-        "1": other
-      ";": punctuation
+        "1": constant
+  "=": assignment
+    "-_": numeric
+      "2": constant
+    "a": other
   "some_loop": fn
     "(": block
       "x": other
@@ -45,28 +46,25 @@
       "while": loop
         "(": block
           "<": comparison
-            "10": other
+            "10": constant
             "x": other
         "{": block
           "=": assignment
-            "*": numeric
-              "(": block
-                "-": numeric
-                  "0": other
-                  "(": block
-                    "++_": numeric
-                      "x": other
-              "2": other
+            "2": constant
             "y": other
-          ";": punctuation
+          "*_": numeric
+            "(": block
+              "-_": numeric
+                "(": block
+                  "++_": numeric
+                    "x": other
       "return": return
         "+": numeric
           "(": block
             "*": numeric
-              "2": other
+              "2": constant
               "x": other
           "y": other
-      ";": punctuation
   "bajojajo": fn
     "(": block
     "{": block
@@ -74,16 +72,13 @@
     "(": block
     "{": block
       "=": assignment
-        "-": numeric
-          "0": other
-          "10": other
-        "x": other
-      ";": punctuation
+        "-_": numeric
+          "10": constant
+        "*_": numeric
+          "x": other
       "print": other
       "(": block
         "fibonacci": other
           "(": block
-            "-": numeric
-              "0": other
+            "-_": numeric
               "x": other
-      ";": punctuation

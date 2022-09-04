@@ -16,6 +16,12 @@ class Node:
         self.name = name
         self.children = []
 
+    def __eq__(self, other):
+        if not isinstance(other, Node):
+            return NotImplemented
+
+        return self.name == other.name and self.kind == other.kind
+
     def add_child(self, child):
 
         self.children.append(child)
@@ -38,7 +44,7 @@ class SyntaxTree:
     def build(self, token_list):
 
         if not all_brackets_closed(token_list):
-            self.errors.append("Unclosed bracket found")
+            self.errors.append("Unclosed brackets found")
 
         self.root, token_list = handle_blocks(Node("root", "root"), token_list)
 
@@ -67,16 +73,27 @@ class SyntaxTree:
 
     def for_all(self, node: Node, function):
 
-        display = ""
-        display += f"{node.name}({node.kind}): "
-
         node = function(node)
 
         for item in node.children:
             self.for_all(item, function)
-            display += f"{item.name}({item.kind}), "
 
         return node
+
+    def validate(self):
+
+        self.errors += check_errors(self.root, [])
+
+        return len(self.errors) == 0
+
+
+def is_constant(item: str):
+
+    for letter in item:
+        if letter not in digits:
+            return False
+
+    return True
 
 
 def handle_blocks(root: Node, content: list):
@@ -124,7 +141,10 @@ def handle_blocks(root: Node, content: list):
             case "eof":
                 break
             case _:
-                new_node = Node(content[index])
+                if is_constant(content[index]):
+                    new_node = Node(content[index], "constant")
+                else:
+                    new_node = Node(content[index])
 
         root.add_child(new_node)
 
@@ -249,8 +269,8 @@ def handle_numeric_ambiguous(node: Node):
             elif index == 0 or (index > 0 and (content[index - 1].kind not in ["numeric", "other"]
                     or content[index - 1].kind == "block" and content[index - 1].name == "(")):
 
-                content[index].children.append(Node("0"))
                 content[index].children.append(content.pop(index + 1))
+                content[index].name = content[index].name + "_"
 
         index += 1
         length = len(content) - 1
@@ -378,6 +398,49 @@ def handle_return(node: Node):
 def handle_punctuation(node: Node):
 
     return node
+
+
+def check_errors(node: Node, errors: list):
+
+    for item in node.children:
+
+        new_errors = check_errors(item, errors)
+        errors += new_errors
+
+    match node.kind:
+
+        case "root":
+            for item in node.children:
+
+                if item.kind == "fn":
+                    continue
+
+                elif item.kind == "assignment" and item.name == "=":
+                    if not (item.children[0].kind == "constant" or (item.children[0].name == "-_"
+                            and len(item.children[0].children)) == 1
+                            and item.children[0].children[0].kind == "constant"):
+
+                        if len(item.children[0].children) > 0:
+                            errors.append(f"Invalid global variable initialisation '{item.children[0].name}"
+                                          f"': {item.children[0].kind} - global variables can only be initialised by "
+                                          f"constant numeric values")
+                        else:
+                            errors.append(f"Invalid global variable initialisation '{item.name}':"
+                                          f" {item.kind} - global variables can only be initialised by "
+                                          f"constant numeric values")
+
+                else:
+                    errors.append(f"Unexpected '{item.name}': {item.kind} - root's children must only be function "
+                                  f"declarations or global variable assignments")
+
+        case "fn":
+            if node.children[0] != Node("(", "block"):
+                errors.append(f"Invalid syntax of fn {node.name} declaration - missing arguments block: {'()'}")
+
+            if node.children[1] != Node("{", "block"):
+                errors.append(f"Invalid syntax of fn {node.name} declaration - missing body block: {'{}'} ")
+
+    return errors
 
 
 def all_brackets_closed(token_list: list[str]):
