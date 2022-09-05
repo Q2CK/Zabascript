@@ -39,37 +39,56 @@ class Node:
 
         return obj
 
+    def get_root(self):
+
+        obj = self
+
+        while obj.parent is not None:
+            obj = obj.parent
+
+        return obj
+
 
 class SyntaxTree:
 
     errors = []
 
-    def __init__(self, token_list: list[str]):
+    def __init__(self, token_list: list[str], output_file):
 
-        self.root = None
+        self.root = Node("root", "root")
 
-        self.build(token_list)
+        self.build(token_list, output_file)
 
-    def build(self, token_list):
+    def build(self, token_list, output_file):
 
         if not all_brackets_closed(token_list):
             self.errors.append("Unclosed brackets found")
 
-        self.root, token_list = handle_blocks(Node("root", "root"), token_list)
+        if len(self.errors) == 0:
 
-        self.root = handle_functions(self.root)
+            self.root, token_list = handle_blocks(self.root, token_list)
 
-        self.root = self.for_all(self.root, handle_conditionals)
-        self.root = self.for_all(self.root, handle_calls)
-        self.root = self.for_all(self.root, handle_numeric_unary)
-        self.root = self.for_all(self.root, handle_numeric_ambiguous)
-        self.root = self.for_all(self.root, handle_numeric_binary)
-        self.root = self.for_all(self.root, handle_comparison)
-        self.root = self.for_all(self.root, handle_boolean_unary)
-        self.root = self.for_all(self.root, handle_boolean_binary)
-        self.root = self.for_all(self.root, handle_assignment)
-        self.root = self.for_all(self.root, handle_return)
-        self.root = self.for_all(self.root, handle_punctuation)
+            self.root = handle_functions(self.root)
+
+            self.root = self.for_all(self.root, handle_conditionals)
+            self.root = self.for_all(self.root, handle_calls)
+            self.root = self.for_all(self.root, handle_numeric_unary)
+            self.root = self.for_all(self.root, handle_numeric_ambiguous)
+            self.root = self.for_all(self.root, handle_numeric_binary)
+            self.root = self.for_all(self.root, handle_comparison)
+            self.root = self.for_all(self.root, handle_boolean_unary)
+            self.root = self.for_all(self.root, handle_boolean_binary)
+            self.root = self.for_all(self.root, handle_assignment)
+            self.root = self.for_all(self.root, handle_return)
+            self.root = self.for_all(self.root, handle_punctuation)
+
+            self.validate()
+
+        if len(self.errors) == 0:
+
+            print("\nSyntax tree:\n")
+            self.show(self.root, output_file)
+            print("\n")
 
     def show(self, node: Node, output_file, indent=""):
 
@@ -146,6 +165,28 @@ def check_errors(node: Node, errors: list):
 
             elif len(node.children) == 0:
                 errors.append(f"Invalid syntax of return from '{node.get_function().name}': fn - missing expression")
+
+        case "block":
+            if node.name == "(":
+                if node.parent.kind == "call":
+                    for item in node.children:
+                        pass
+
+                elif node.parent.kind == "fn":
+                    pass
+
+                else:
+                    pass
+
+            elif node.name == "{":
+                for item in node.children:
+                    if item.kind not in ["assignment", "numeric", "call", "loop", "conditional", "return"] and not \
+                            (item.kind == "block" and item.name == "{"):
+                        errors.append(f"Unexpected standalone '{item.name}': {item.kind} in '{item.get_function().name}"
+                                      f"': fn")
+
+            else:
+                pass
 
     return node, errors
 
@@ -225,6 +266,9 @@ def handle_functions(node: Node):
 
     while index < length:
         if node.name == "root" and node.kind == "root" and content[index].kind == "fn":
+
+            node.data.append(content[index].name)
+
             content[index].add_child(content.pop(index + 1))
             content[index].add_child(content.pop(index + 1))
 
@@ -255,15 +299,7 @@ def handle_conditionals(node: Node):
     return node
 
 
-function_names = []
-
-
 def handle_calls(node: Node):
-
-    if node.name == "root" and node.kind == "root":
-        for item in node.children:
-            if item.kind == "fn":
-                function_names.append(item.name)
 
     index = 0
 
@@ -271,9 +307,11 @@ def handle_calls(node: Node):
     content = node.children
 
     while index < length:
-        if content[index].kind == "other" and content[index].name in function_names:
+
+        if content[index].kind == "other" and content[index].name in node.get_root().data:
 
             content[index].add_child(content.pop(index + 1))
+            content[index].kind = "call"
 
         index += 1
         length = len(content) - 1
