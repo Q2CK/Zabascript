@@ -179,14 +179,68 @@ def check_errors(node: Node, errors: list):
                     pass
 
             elif node.name == "{":
-                for item in node.children:
+                for idx, item in enumerate(node.children):
                     if item.kind not in ["assignment", "numeric", "call", "loop", "conditional", "return"] and not \
                             (item.kind == "block" and item.name == "{"):
                         errors.append(f"Unexpected standalone '{item.name}': {item.kind} in '{item.get_function().name}"
                                       f"': fn")
 
+                    if item == Node("else", "conditional"):
+                        if idx - 1 >= 0 and node.children[idx - 1] != Node("if", "conditional"):
+                            errors.append(f"Unexpected standalone 'else': conditional in "
+                                          f"'{item.get_function().name}': fn - missing 'if': conditional")
+
             else:
                 pass
+
+        case "loop":
+            if len(node.children) != 2 or node.children[0] != Node("(", "block") \
+                    or node.children[1] != Node("{", "block"):
+                errors.append(f"Invalid syntax of 'while': loop in '{node.get_function().name}': fn - "
+                              f"'while': loop requires only a condition block and body block")
+            else:
+                if len(node.children[0].children) != 1 or not \
+                        (node.children[0].children[0].kind in ["boolean", "comparison"]
+                         or node.children[0].children[0] in [Node("True", "comparison"), Node("False", "comparison")]):
+                    errors.append(f"Invalid syntax of 'while': loop in '{node.get_function().name}': fn - "
+                                  f"'while': expected boolean expression in condition block")
+
+        case "conditional":
+            if node.name in ["if", "else"]:
+                if len(node.children) != 2 or node.children[0] != Node("(", "block") \
+                        or node.children[1] != Node("{", "block"):
+                    errors.append(f"Invalid syntax of 'if' conditional in '{node.get_function().name}': fn - "
+                                  f"'{node.name}': conditional requires only a condition block and body block")
+                else:
+                    if len(node.children[0].children) != 1 or not \
+                            (node.children[0].children[0].kind in ["boolean", "comparison"]
+                             or node.children[0].children[0] in [Node("True", "comparison"),
+                                                                 Node("False", "comparison")]):
+                        errors.append(f"Invalid syntax of if in '{node.get_function().name}': fn - "
+                                      f"'{node.name}': conditional expected boolean expression in condition block")
+
+        case "numeric":
+            for item in node.children:
+                if item.kind not in ["numeric", "other", "call", "constant"] and item != Node("(", "block"):
+                    errors.append(f"Invalid algebraic expression in '{node.get_function().name}': fn - "
+                                  f"'{node.name}': {node.kind} - unexpected '{item.name}': {item.kind}")
+
+        case "boolean":
+            for item in node.children:
+                if item.kind not in ["comparison", "boolean", "call"] and item != Node("(", "block"):
+                    errors.append(f"Invalid boolean expression in '{node.get_function().name}': fn - "
+                                  f"'{node.name}': {node.kind} - unexpected '{item.name}': {item.kind}")
+
+        case "comparison":
+            for item in node.children:
+                if item.kind in ["numeric", "constant", "other", "call"]:
+                    pass
+                else:
+                    errors.append(f"Invalid comparison in '{node.get_function().name}': fn - "
+                                  f"'{node.name}': {node.kind} - unexpected '{item.name}': {item.kind}")
+
+        case "quote":
+            pass
 
     return node, errors
 
@@ -224,8 +278,6 @@ def handle_blocks(root: Node, content: list):
                 index = 0
             case "}" | ")" | "]":
                 return root, content[index:]
-            case "match":
-                new_node = Node(content[index], "match")
             case "while":
                 new_node = Node(content[index], "loop")
             case "if" | "else":
@@ -234,7 +286,7 @@ def handle_blocks(root: Node, content: list):
                 new_node = Node(content[index], "numeric")
             case "and" | "or" | "not":
                 new_node = Node(content[index], "boolean")
-            case "!=" | "==" | "<" | ">" | "<=" | ">=":
+            case "!=" | "==" | "<" | ">" | "<=" | ">=" | "True" | "False":
                 new_node = Node(content[index], "comparison")
             case "\"" | "'":
                 new_node = Node(content[index], "quote")
@@ -360,14 +412,14 @@ def handle_numeric_ambiguous(node: Node):
 
         if content[index].name in ["-", "*", "&"] and content[index].kind == "numeric":
 
-            if index > 0 and (content[index - 1].kind in ["numeric", "other"]
+            if index > 0 and (content[index - 1].kind in ["numeric", "other", "constant"]
                     or (content[index - 1].kind == "block" and content[index - 1].name == "(")):
 
                 content[index].add_child(content.pop(index + 1))
                 content[index].add_child(content.pop(index - 1))
                 index -= 1
 
-            elif index == 0 or (index > 0 and (content[index - 1].kind not in ["numeric", "other"]
+            elif index == 0 or (index > 0 and (content[index - 1].kind not in ["numeric", "other", "constant"]
                     or content[index - 1].kind == "block" and content[index - 1].name == "(")):
 
                 content[index].add_child(content.pop(index + 1))
